@@ -8,8 +8,8 @@ def contain_node(lst, node):
     node_from_len = len(node.v_from)
     node_to_len = len(node.v_to)
     for lst_node in lst:
-        if lst_node.level != node.level:
-            continue
+        # if lst_node.level != node.level:
+            # continue
         if lst_node.cost != node.cost:
             continue
         lst_node_from_len = len(lst_node.v_from)
@@ -32,7 +32,20 @@ def contain_node(lst, node):
                 break
         if not to_test:
             continue
+        print("return True")
         return True
+    return False
+
+
+def find_cycles(u):
+    starts = []
+    for v_fr in u.v_from:
+        for v_t in u.v_to:
+            key = str(v_fr) + " : " + str(v_t)
+            if key not in starts:
+                starts.append(key)
+            else:
+                return True
     return False
 
 
@@ -57,7 +70,8 @@ def exh_search(a, n, s):
                 new_level = u.level + 1 if _node not in u.v_from else u.level - 1
                 new_to.append(_node)
                 new_node = TreeNode(new_from, new_to, new_cost, new_level, new_matr)
-                if not contain_node(nodes, new_node):
+
+                if not contain_node(nodes, new_node) and u.cost != float('inf') and not find_cycles(u):
                     heapq.heappush(nodes, new_node)
                     queue.put(new_node)
 
