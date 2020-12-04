@@ -3,7 +3,7 @@ import copy
 import random
 
 
-__PRECISION = 1000
+__PRECISION = 100
 __ALPHA = 0.5
 __BETA = 1 - __ALPHA
 
@@ -32,8 +32,10 @@ def calc_probability_i_j(i, j, a, n, fer, alpha, beta):
 def go_ants(a, n, s):
     fer = [[1 for _ in range(n)] for _ in range(n)]
     node = None
+    nodes = []
     for i in range(__PRECISION):
         node = TreeNode([0], [], 0, 1, copy.deepcopy(a))
+        nodes.append(node)
         while True:
             probs = [0]
             fr = node.v_to[-1] if node.v_to else 0
@@ -54,35 +56,33 @@ def go_ants(a, n, s):
                     break
 
             if cur_way == -1:
-                """
-                for k in node.v_to:
-                    for j in node.v_from:
-                        fer[j][k] -= 1
-                """
-                node.v_from = []
-                node.v_to = []
-                node.cost = 0
                 break
 
-            # fer[node.v_from[-1]][cur_way] += 1
             node.cost += s - a[fr][cur_way] if cur_way not in node.v_from else -a[fr][cur_way]
-            # node.cur_matr[fr][cur_way] = float('inf')
-            if node.v_to:
-                node.cur_matr[cur_way][fr] = float('inf')
+            node.cur_matr[fr][cur_way] = float('inf')
             if node.v_to:
                 node.v_from.append(fr)
             node.v_to.append(cur_way)
             if cur_way == 0:
-                probs = [0]
-                for j in range(n):
-                    probs.append(probs[-1] + calc_probability_i_j(cur_way, j, node.cur_matr, n, fer, __ALPHA, __BETA))
-                probs = probs[1:]
                 if node.cost >= 0:
                     for k in node.v_to:
                         for j in node.v_from:
                             fer[j][k] += node.cost
-                break
 
+                nodes.append(TreeNode(node.v_from, node.v_to, node.cost, node.level, node.cur_matr))
+                end_test = [0]
+                for j in range(n):
+                    end_test.append(end_test[-1] + calc_probability_i_j(0, j, node.cur_matr, n, fer, __ALPHA, __BETA))
+                if sum(end_test) == 0 or node.cost == float('-inf'):
+                    break
+
+    for el in nodes:
+        if el.v_to and el.v_to[-1] != 0:
+            el.cost = float('-inf')
+
+    nodes.sort(key=lambda elem: -elem.cost)
+
+    node = nodes[0]
     if node.cost > 0:
         print(node.cost)
         for i in range(len(node.v_to)):

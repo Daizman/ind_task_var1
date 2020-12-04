@@ -114,7 +114,7 @@ def main(n=None, a=None, s=None):
                         max_potential_inf = (cur_node_gr, i)
 
             if max_potential < 1:
-                node.cost -= (a[node.v_to[-1]][node.v_from[-1]] - s)
+                node.cost -= a[node.v_to[-1]][node.v_from[-1]]
                 node.v_from.append(node.v_to[-1])
                 node.cur_matr[node.v_to[-1]][0] = float('inf')
                 node.v_to.append(0)
