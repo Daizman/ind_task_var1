@@ -64,6 +64,10 @@ def go_ants(a, n, s):
                 node.v_from.append(fr)
             node.v_to.append(cur_way)
             if cur_way == 0:
+                if 0 in node.v_from and node.cost >= 0:
+                    for k in node.v_to:
+                        for j in node.v_from:
+                            fer[j][k] -= node.cost
                 if node.cost >= 0:
                     for k in node.v_to:
                         for j in node.v_from:
